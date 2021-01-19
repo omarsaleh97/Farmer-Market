@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:farmer_market/src/styles/base.dart';
 import 'package:farmer_market/src/styles/text.dart';
-import 'package:farmer_market/src/styles/textfields.dart';
 import 'package:farmer_market/src/widgets/button.dart';
 import 'package:farmer_market/src/widgets/social_button.dart';
 import 'package:farmer_market/src/widgets/textfield.dart';
