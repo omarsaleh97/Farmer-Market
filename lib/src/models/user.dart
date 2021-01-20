@@ -1,7 +1,7 @@
-class User {
+class Farmer {
   final String userId;
   final String email;
-  User({this.userId, this.email});
+  Farmer({this.userId, this.email});
 
   Map<String, dynamic> toMap() {
     return {
@@ -10,7 +10,7 @@ class User {
     };
   }
 
-  User.fromFireStore(Map<String, dynamic> firestore)
+  Farmer.fromFireStore(Map<String, dynamic> firestore)
       : userId = firestore['userId'],
         email = firestore['email'];
 }

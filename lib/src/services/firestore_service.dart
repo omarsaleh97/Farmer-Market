@@ -3,15 +3,15 @@ import 'package:farmer_market/src/models/user.dart';
 
 class FirestoreService {
   FirebaseFirestore _db = FirebaseFirestore.instance;
-  Future<void> addUser(User user) {
+  Future<void> addUser(Farmer user) {
     return _db.collection('users').doc(user.userId).set(user.toMap());
   }
 
-  Future<User> fetchUser(String userId) {
+  Future<Farmer> fetchUser(String userId) {
     return _db
         .collection('users')
         .doc(userId)
         .get()
-        .then((snapshot) => User.fromFireStore(snapshot.data()));
+        .then((snapshot) => Farmer.fromFireStore(snapshot.data()));
   }
 }

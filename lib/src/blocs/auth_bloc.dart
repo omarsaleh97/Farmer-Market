@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:farmer_market/src/models/user.dart' as u;
 import 'package:farmer_market/src/services/firestore_service.dart';
+import 'package:farmer_market/src/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
@@ -51,8 +51,8 @@ class AuthBloc {
 
     try{
       UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: _email.value.trim(), password: _password.value.trim());
-var user = u.User(userId: authResult.user.uid, email: _email.value.trim());
-    await _firestoreService.addUser(user);
+      var user = Farmer(userId: authResult.user.uid, email: _email.value.trim());
+      await _firestoreService.addUser(user);
     } catch (error){
       print(error);
     }
