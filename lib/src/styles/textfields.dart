@@ -29,13 +29,23 @@ abstract class TextFieldStyles {
           color: AppColors.straw,
           width: BaseStyles.borderWidth,
         ),
+        borderRadius: BorderRadius.circular(BaseStyles.borderRadius),);
+  }
+  static BoxDecoration get cupertinoErrorDecoration {
+    return BoxDecoration(
+        border: Border.all(
+          color: AppColors.red,
+          width: BaseStyles.borderWidth,
+        ),
         borderRadius: BorderRadius.circular(BaseStyles.borderRadius));
   }
 
-  static InputDecoration materialDecoration(String hintText, IconData icon) {
+  static InputDecoration materialDecoration(String hintText, IconData icon,String errorText) {
     return InputDecoration(
       contentPadding: EdgeInsets.all(8.0),
       hintText: hintText,
+      errorText: errorText,
+      errorStyle: TextStyles.error,
       hintStyle: TextFieldStyles.placeholder,
       border: InputBorder.none,
       focusedBorder: OutlineInputBorder(
@@ -45,6 +55,14 @@ abstract class TextFieldStyles {
       enabledBorder: OutlineInputBorder(
           borderSide:
           BorderSide(color: AppColors.straw, width: BaseStyles.borderWidth),
+          borderRadius: BorderRadius.circular(BaseStyles.borderRadius)),
+      focusedErrorBorder: OutlineInputBorder(
+          borderSide:
+          BorderSide(color: AppColors.straw, width: BaseStyles.borderWidth),
+          borderRadius: BorderRadius.circular(BaseStyles.borderRadius)),
+      errorBorder: OutlineInputBorder(
+          borderSide:
+          BorderSide(color: AppColors.red, width: BaseStyles.borderWidth),
           borderRadius: BorderRadius.circular(BaseStyles.borderRadius)),
       prefixIcon: iconPrefix(icon),
     );
