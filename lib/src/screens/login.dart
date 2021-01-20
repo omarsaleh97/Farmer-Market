@@ -14,14 +14,14 @@ import 'package:provider/provider.dart';
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final authBloc= Provider.of<AuthBloc>(context);
+    final authBloc = Provider.of<AuthBloc>(context);
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
-        child: pageBody(context,authBloc),
+        child: pageBody(context, authBloc),
       );
     } else {
       return Scaffold(
-        body: pageBody(context,authBloc),
+        body: pageBody(context, authBloc),
       );
     }
   }
@@ -71,10 +71,16 @@ class Login extends StatelessWidget {
                 errorText: snapshot.error,
               );
             }),
-        AppButton(
-          buttonText: "Login",
-          buttonType: ButtonType.LightBlue,
-        ),
+        StreamBuilder<bool>(
+            stream: authBloc.isValid,
+            builder: (context, snapshot) {
+              return AppButton(
+                buttonText: 'Login',
+                buttonType: (snapshot.data == true)
+                    ? ButtonType.LightBlue
+                    : ButtonType.Disabled,
+              );
+            }),
         SizedBox(
           height: 6,
         ),
