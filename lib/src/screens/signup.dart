@@ -79,6 +79,7 @@ class Signup extends StatelessWidget {
               buttonType: (snapshot.data == true)
                   ? ButtonType.LightBlue
                   : ButtonType.Disabled,
+              onPressed: authBloc.signupEmail,
             );
           },
         ),

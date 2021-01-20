@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:farmer_market/src/routes.dart';
 import 'package:farmer_market/src/screens/login.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,8 @@ class _AppState extends State<App> {
       )
     ], child: PlatformApp());
   }
+
+
 
   @override
   void dispose() {
