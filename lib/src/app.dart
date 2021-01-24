@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:farmer_market/src/routes.dart';
+import 'package:farmer_market/src/screens/landing.dart';
 import 'package:farmer_market/src/screens/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,11 +22,10 @@ class _AppState extends State<App> {
     return MultiProvider(providers: [
       Provider(
         create: (context) => authBloc,
-      )
+      ),
+      FutureProvider(create: (context) => authBloc.isLoggedIn())
     ], child: PlatformApp());
   }
-
-
 
   @override
   void dispose() {
@@ -37,20 +37,43 @@ class _AppState extends State<App> {
 class PlatformApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var isLoggedIn = Provider.of<bool>(context);
+
     if (Platform.isIOS) {
       return CupertinoApp(
         debugShowCheckedModeBanner: false,
-        home: Login(),
+        home: (isLoggedIn == null)
+            ? loadingScreen(true)
+            : (isLoggedIn == true)
+                ? Landing()
+                : Login(),
         onGenerateRoute: Routes.cupertinoRoutes,
         theme: CupertinoThemeData(scaffoldBackgroundColor: Colors.white),
       );
     } else {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Login(),
+        home: (isLoggedIn == null)
+            ? loadingScreen(false)
+            : (isLoggedIn == true)
+                ? Landing()
+                : Login(),
         onGenerateRoute: Routes.materialRoutes,
         theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       );
     }
+  }
+
+  Widget loadingScreen(bool isIOS) {
+    return (isIOS)
+        ? CupertinoPageScaffold(
+            child: Center(
+            child: CupertinoActivityIndicator(),
+          ))
+        : Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
   }
 }
