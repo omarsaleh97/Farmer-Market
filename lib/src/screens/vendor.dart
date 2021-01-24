@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:farmer_market/src/widgets/navbar.dart';
+import 'package:farmer_market/src/widgets/vendor_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
