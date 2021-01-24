@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:farmer_market/src/blocs/auth_bloc.dart';
 import 'package:farmer_market/src/styles/tabBar.dart';
 import 'package:farmer_market/src/widgets/navbar.dart';
 import 'package:farmer_market/src/widgets/orders.dart';
@@ -8,8 +10,46 @@ import 'package:farmer_market/src/widgets/profile.dart';
 import 'package:farmer_market/src/widgets/vendor_scaffold.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Vendor extends StatelessWidget {
+class Vendor extends StatefulWidget {
+  StreamSubscription _userSubscription;
+
+  @override
+  _VendorState createState() => _VendorState();
+
+  static TabBar get vendorTabBar {
+    return TabBar(
+      unselectedLabelColor: TabBarStyles.unselectedLabelColor,
+      labelColor: TabBarStyles.labelColor,
+      indicatorColor: TabBarStyles.indicatorColor,
+      tabs: <Widget>[
+        Tab(icon: Icon(Icons.list)),
+        Tab(icon: Icon(Icons.shopping_cart)),
+        Tab(icon: Icon(Icons.person)),
+      ],
+    );
+  }
+}
+
+class _VendorState extends State<Vendor> {
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () {
+      var authBloc = Provider.of<AuthBloc>(context, listen: false);
+      widget._userSubscription = authBloc.user.listen((user) {
+        if (user == null)
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/login', (route) => false);
+      });
+    });
+    super.initState();
+  }
+@override
+  void dispose() {
+widget._userSubscription.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
@@ -31,7 +71,7 @@ class Vendor extends StatelessWidget {
             headerSliverBuilder: (BuildContext context, bool innerBoxScrolled) {
               return <Widget>[
                 AppNavbar.materialNavBar(
-                    title: 'Vendor Name', tabBar: vendorTabBar)
+                    title: 'Vendor Name', tabBar: Vendor.vendorTabBar)
               ];
             },
             body:
@@ -39,19 +79,6 @@ class Vendor extends StatelessWidget {
           ),
         ),
       );
-
     }
-  }
-  static TabBar get vendorTabBar {
-    return TabBar(
-      unselectedLabelColor: TabBarStyles.unselectedLabelColor ,
-      labelColor: TabBarStyles.labelColor ,
-      indicatorColor: TabBarStyles.indicatorColor ,
-      tabs: <Widget>[
-        Tab(icon: Icon(Icons.list)),
-        Tab(icon: Icon(Icons.shopping_cart)),
-        Tab(icon: Icon(Icons.person)),
-      ],
-    );
   }
 }

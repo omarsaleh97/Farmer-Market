@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:farmer_market/src/app.dart';
 import 'package:farmer_market/src/blocs/auth_bloc.dart';
@@ -12,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
+  StreamSubscription _userSubscription;
+
   @override
   _LoginState createState() => _LoginState();
 }
@@ -19,14 +22,21 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   @override
   void initState() {
-  final authBloc = Provider.of<AuthBloc>(context,listen: false);
-  authBloc.user.listen((user) {
-    if(user !=null){
-      Navigator.pushReplacementNamed(context, '/landing');
-    }
-  });
+    final authBloc = Provider.of<AuthBloc>(context, listen: false);
+    widget._userSubscription = authBloc.user.listen((user) {
+      if (user != null) {
+        Navigator.pushReplacementNamed(context, '/landing');
+      }
+    });
     super.initState();
   }
+
+  @override
+  void dispose() {
+    widget._userSubscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authBloc = Provider.of<AuthBloc>(context);
