@@ -13,6 +13,12 @@ abstract class TextStyles {
     );
   }
 
+  static TextStyle get navTitleMaterial {
+    return GoogleFonts.poppins(
+        textStyle: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold));
+  }
   static TextStyle get navTitle {
     return GoogleFonts.poppins(
       textStyle:
