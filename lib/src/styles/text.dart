@@ -12,6 +12,10 @@ abstract class TextStyles {
           fontSize: 40.0),
     );
   }
+  static TextStyle get picker {
+    return GoogleFonts.roboto(
+        textStyle: TextStyle(color: AppColors.darkgray, fontSize: 35.0));
+  }
   static TextStyle get subtitle {
     return GoogleFonts.economica(
         textStyle: TextStyle(

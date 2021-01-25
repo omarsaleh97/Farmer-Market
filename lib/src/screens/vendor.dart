@@ -57,7 +57,7 @@ widget._userSubscription.cancel();
         child: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              AppNavbar.cupertinoNavBar(title: 'Vendor Name', context: context),
+              AppNavbar.cupertinoNavBar(title: 'Vendor Name'),
             ];
           },
           body: VendorScaffold.cupertinoTabScaffold,
