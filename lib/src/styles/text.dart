@@ -12,7 +12,13 @@ abstract class TextStyles {
           fontSize: 40.0),
     );
   }
-
+  static TextStyle get subtitle {
+    return GoogleFonts.economica(
+        textStyle: TextStyle(
+            color: AppColors.straw,
+            fontWeight: FontWeight.bold,
+            fontSize: 30.0));
+  }
   static TextStyle get navTitleMaterial {
     return GoogleFonts.poppins(
         textStyle: TextStyle(

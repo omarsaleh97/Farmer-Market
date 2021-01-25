@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:farmer_market/src/services/firestore_service.dart';
 import 'package:farmer_market/src/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -12,6 +13,7 @@ class AuthBloc {
   final _email = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
   final _user = BehaviorSubject<Farmer>();
+  final _errorMessage = BehaviorSubject<String>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -21,6 +23,8 @@ class AuthBloc {
   Stream<bool> get isValid =>
       CombineLatestStream.combine2(email, password, (email, password) => true);
   Stream<Farmer> get user => _user.stream;
+  Stream<String> get errorMessage => _errorMessage.stream;
+
   //Set Data
   Function(String) get changeEmail => _email.sink.add;
   Function(String) get changePassword => _password.sink.add;
@@ -29,6 +33,7 @@ class AuthBloc {
     _email.close();
     _password.close();
     _user.close();
+    _errorMessage.close();
   }
 
   //Transformers
@@ -61,21 +66,21 @@ class AuthBloc {
       var user =
           Farmer(userId: userCredential.user.uid, email: _email.value.trim());
       await _firestoreService.addUser(user);
-    } catch (error) {
+    } on FirebaseAuthException  catch (error) {
       print(error);
+      _errorMessage.sink.add(error.message);
     }
   }
 
   loginEmail() async {
-    print('Login with username and password');
-
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: _email.value.trim(), password: _password.value.trim());
       var user = await _firestoreService.fetchUser(userCredential.user.uid);
       _user.sink.add(user);
-    } catch (error) {
+    } on FirebaseAuthException  catch (error) {
       print(error);
+      _errorMessage.sink.add(error.message);
     }
   }
 
@@ -91,8 +96,13 @@ class AuthBloc {
     _user.sink.add(user);
     return true;
   }
-  logout()async{
+
+  logout() async {
     await _auth.signOut();
     _user.sink.add(null);
+  }
+
+  clearErrorMessage() async {
+    _errorMessage.sink.add('');
   }
 }
