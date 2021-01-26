@@ -1,13 +1,18 @@
 import 'dart:async';
 
+import 'package:farmer_market/src/models/product.dart';
+import 'package:farmer_market/src/services/firestore_service.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:uuid/uuid.dart';
 
 class ProductBloc {
   final _productName = BehaviorSubject<String>();
   final _unitType = BehaviorSubject<String>();
   final _unitPrice = BehaviorSubject<String>();
   final _availableUnits = BehaviorSubject<String>();
-
+  final _vendorId = BehaviorSubject<String>();
+  final db = FirestoreService();
+  var uuid = Uuid();
   //Get
   Stream<String> get productName =>
       _productName.stream.transform(validateProductName);
@@ -23,11 +28,29 @@ class ProductBloc {
   Function(String) get changeUnitType => _unitType.sink.add;
   Function(String) get changeUnitPrice => _unitPrice.sink.add;
   Function(String) get changeAvailableUnits => _availableUnits.sink.add;
+  Function(String) get changeVendorId => _vendorId.sink.add;
+
   displose() {
     _productName.close();
     _unitType.close();
     _unitPrice.close();
     _availableUnits.close();
+    _vendorId.close();
+  }
+
+  Future<void> saveProduct() async {
+    var product = Product(
+        approved: true,
+        availableUnits: int.parse(_availableUnits.value),
+        productId: uuid.v4(),
+        productName: _productName.value.trim(),
+        unitPrice: double.parse(_unitPrice.value),
+        unitType: _unitType.value,
+        vendorId: _vendorId.value);
+    return db
+        .addProduct(product)
+        .then((value) => print('Product Saved'))
+        .catchError((error) => print(error));
   }
 
   //Validators

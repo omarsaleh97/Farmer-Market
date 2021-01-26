@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:farmer_market/src/models/product.dart';
 import 'package:farmer_market/src/models/user.dart';
 
 class FirestoreService {
@@ -21,5 +22,12 @@ class FirestoreService {
             .data()['production']
             .map<String>((type) => type.toString())
             .toList());
+  }
+
+  Future addProduct(Product product) {
+    return _db
+        .collection('products')
+        .doc(product.productId)
+        .set(product.toMap());
   }
 }
