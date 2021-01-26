@@ -14,4 +14,12 @@ class FirestoreService {
         .get()
         .then((snapshot) => Farmer.fromFireStore(snapshot.data()));
   }
+
+  Stream<List<String>> fetchUnitTypes() {
+    return _db.collection('types').doc('units').snapshots().map((snapshot) =>
+        snapshot
+            .data()['production']
+            .map<String>((type) => type.toString())
+            .toList());
+  }
 }
