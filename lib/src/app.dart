@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:farmer_market/src/blocs/product_bloc.dart';
 import 'package:farmer_market/src/routes.dart';
 import 'package:farmer_market/src/screens/landing.dart';
 import 'package:farmer_market/src/screens/login.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:farmer_market/src/blocs/auth_bloc.dart';
 
 final authBloc = AuthBloc();
+final productBloc = ProductBloc();
 
 class App extends StatefulWidget {
   @override
@@ -22,9 +24,8 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      Provider(
-        create: (context) => authBloc,
-      ),
+      Provider(create: (context) => authBloc),
+      Provider(create: (context) => productBloc),
       FutureProvider(create: (context) => authBloc.isLoggedIn())
     ], child: PlatformApp());
   }
@@ -32,6 +33,7 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     authBloc.dispose();
+    productBloc.displose();
     super.dispose();
   }
 }
@@ -53,9 +55,8 @@ class PlatformApp extends StatelessWidget {
         theme: CupertinoThemeData(
             scaffoldBackgroundColor: Colors.white,
             primaryColor: AppColors.straw,
-        textTheme: CupertinoTextThemeData(
-          tabLabelTextStyle: TextStyles.suggestion
-        )),
+            textTheme: CupertinoTextThemeData(
+                tabLabelTextStyle: TextStyles.suggestion)),
       );
     } else {
       return MaterialApp(

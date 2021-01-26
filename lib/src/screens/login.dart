@@ -14,23 +14,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
-  StreamSubscription _userSubscription;
-  StreamSubscription _errorMessageSubscription;
+
 
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
+  StreamSubscription _userSubscription;
+  StreamSubscription _errorMessageSubscription;
   @override
   void initState() {
     final authBloc = Provider.of<AuthBloc>(context, listen: false);
-    widget._userSubscription = authBloc.user.listen((user) {
+    _userSubscription = authBloc.user.listen((user) {
       if (user != null) {
         Navigator.pushReplacementNamed(context, '/landing');
       }
     });
-    widget._errorMessageSubscription =
+    _errorMessageSubscription =
         authBloc.errorMessage.listen((errorMessage) {
       if (errorMessage != '') {
         AppAlerts.showErrorDialog(Platform.isIOS, context, errorMessage)
@@ -42,8 +43,8 @@ class _LoginState extends State<Login> {
 
   @override
   void dispose() {
-    widget._userSubscription.cancel();
-    widget._errorMessageSubscription.cancel();
+    _userSubscription.cancel();
+    _errorMessageSubscription.cancel();
     super.dispose();
   }
 
