@@ -16,28 +16,8 @@ class Products extends StatelessWidget {
   Widget build(BuildContext context) {
     var productBloc = Provider.of<ProductBloc>(context);
     var authBloc = Provider.of<AuthBloc>(context);
-    if (Platform.isIOS) {
-      return CupertinoPageScaffold(
-        child: CupertinoToolbar(
-          items: <CupertinoToolbarItem>[
-            CupertinoToolbarItem(
-                icon: CupertinoIcons.add_circled,
-                onPressed: () =>
-                    Navigator.of(context).pushNamed('/editproduct'))
-          ],
-          body: pageBody(productBloc, context, authBloc.userId),
-        ),
-      );
-    } else {
-      return Scaffold(
-        body: pageBody(productBloc, context, authBloc.userId),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppColors.straw,
-          child: Icon(Icons.add),
-          onPressed: () => Navigator.of(context).pushNamed('/editproduct'),
-        ),
-      );
-    }
+
+    return pageBody(productBloc, context, authBloc.userId);
   }
 
   Widget pageBody(
@@ -45,53 +25,45 @@ class Products extends StatelessWidget {
     return StreamBuilder<List<Product>>(
         stream: productBloc.productByVendorId(vendorId),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (!snapshot.hasData)
             return (Platform.isIOS)
                 ? CupertinoActivityIndicator()
                 : CircularProgressIndicator();
-          }
+
           return Column(
-            children: [
+            children: <Widget>[
               Expanded(
                 child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    var product = snapshot.data[index];
-                    return GestureDetector(
-                      child: AppCard(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      var product = snapshot.data[index];
+                      return GestureDetector(
+                        child: AppCard(
+                          availableUnits: product.availableUnits,
+                          price: product.unitPrice,
                           productName: product.productName,
                           unitType: product.unitType,
-                          availableUnits: product.availableUnits,
-                          price: product.unitPrice),
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed('/editproduct/${product.productId}');
-                      },
-                    );
-                  },
-                  itemCount: snapshot.data.length,
-                ),
+                        ),
+                        onTap: () => Navigator.of(context)
+                            .pushNamed('/editproduct/${product.productId}'),
+                      );
+                    }),
               ),
               GestureDetector(
                 child: Container(
-                  height: 50,
+                  height: 50.0,
                   width: double.infinity,
                   color: AppColors.straw,
                   child: (Platform.isIOS)
-                      ? Icon(
-                          CupertinoIcons.add,
-                          color: Colors.white,
-                          size: 35,
-                        )
-                      : Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 35,
-                        ),
+                      ? Icon(CupertinoIcons.add,
+                      color: Colors.white, size: 35.0)
+                      : Icon(Icons.add, color: Colors.white, size: 35.0),
                 ),
-                onTap: ()=>Navigator.of(context).pushNamed('/editproduct'),
+                onTap: () => Navigator.of(context).pushNamed('/editproduct'),
               )
             ],
           );
         });
   }
 }
+
