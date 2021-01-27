@@ -30,4 +30,14 @@ class FirestoreService {
         .doc(product.productId)
         .set(product.toMap());
   }
+
+  Stream<List<Product>> fetchProductsByVedorId(String vendorId) {
+    return _db
+        .collection('products')
+        .where('vendorId', isEqualTo: vendorId)
+        .snapshots()
+        .map((query) => query.docs)
+        .map((snapshot) =>
+            snapshot.map((doc) => Product.fromFirestore(doc.data())).toList());
+  }
 }
