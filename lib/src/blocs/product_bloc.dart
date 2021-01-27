@@ -11,6 +11,9 @@ class ProductBloc {
   final _unitPrice = BehaviorSubject<String>();
   final _availableUnits = BehaviorSubject<String>();
   final _vendorId = BehaviorSubject<String>();
+  final _productSaved = PublishSubject<bool>();
+  final _product = BehaviorSubject<Product>();
+
   final db = FirestoreService();
   var uuid = Uuid();
   //Get
@@ -25,12 +28,15 @@ class ProductBloc {
       productName, unitType, unitPrice, availableUnits, (a, b, c, d) => true);
   Stream<List<Product>> productByVendorId(String vendorId) =>
       db.fetchProductsByVedorId(vendorId);
+  Stream<bool> get productSaved => _productSaved.stream;
+  Future<Product> fetchProduct(String productId) => db.fetchProduct(productId);
   //set
   Function(String) get changeProductName => _productName.sink.add;
   Function(String) get changeUnitType => _unitType.sink.add;
   Function(String) get changeUnitPrice => _unitPrice.sink.add;
   Function(String) get changeAvailableUnits => _availableUnits.sink.add;
   Function(String) get changeVendorId => _vendorId.sink.add;
+  Function(Product) get changeProduct => _product.sink.add;
 
   displose() {
     _productName.close();
@@ -38,50 +44,60 @@ class ProductBloc {
     _unitPrice.close();
     _availableUnits.close();
     _vendorId.close();
+    _productSaved.close();
+    _product.close();
   }
 
   Future<void> saveProduct() async {
     var product = Product(
-        approved: true,
-        availableUnits: int.parse(_availableUnits.value),
-        productId: uuid.v4(),
-        productName: _productName.value.trim(),
-        unitPrice: double.parse(_unitPrice.value),
-        unitType: _unitType.value,
-        vendorId: _vendorId.value);
+      approved: (_product.value == null) ? true : _product.value.approved,
+      availableUnits: int.parse(_availableUnits.value),
+      productId:
+          (_product.value == null) ? uuid.v4() : _product.value.productId,
+      productName: _productName.value.trim(),
+      unitPrice: double.parse(_unitPrice.value),
+      unitType: _unitType.value,
+      vendorId: _vendorId.value,
+    );
     return db
-        .addProduct(product)
-        .then((value) => print('Product Saved'))
-        .catchError((error) => print(error));
+        .setProduct(product)
+        .then((value) => _productSaved.sink.add(true))
+        .catchError((error) => _productSaved.sink.add(false));
   }
 
   //Validators
 
   final validateUnitPrice = StreamTransformer<String, double>.fromHandlers(
       handleData: (unitPrice, sink) {
-    try {
-      sink.add(double.parse(unitPrice));
-    } catch (error) {
-      sink.addError('Must be a number');
+    if (unitPrice != null) {
+      try {
+        sink.add(double.parse(unitPrice));
+      } catch (error) {
+        sink.addError('Must be a number');
+      }
     }
   });
   final validateAvailableUnits = StreamTransformer<String, int>.fromHandlers(
       handleData: (availableUnits, sink) {
-    try {
-      sink.add(int.parse(availableUnits));
-    } catch (error) {
-      sink.addError('Must be a whole number');
+    if (availableUnits != null) {
+      try {
+        sink.add(int.parse(availableUnits));
+      } catch (error) {
+        sink.addError('Must be a whole number');
+      }
     }
   });
   final validateProductName = StreamTransformer<String, String>.fromHandlers(
       handleData: (productName, sink) {
-    if (productName.length >= 3 && productName.length <= 20) {
-      sink.add(productName.trim());
-    } else {
-      if (productName.length < 3) {
-        sink.addError('3 Character Minimum');
+    if (productName != null) {
+      if (productName.length >= 3 && productName.length <= 20) {
+        sink.add(productName.trim());
       } else {
-        sink.addError('20 Character Maximum');
+        if (productName.length < 3) {
+          sink.addError('3 Character Minimum');
+        } else {
+          sink.addError('20 Character Maximum');
+        }
       }
     }
   });

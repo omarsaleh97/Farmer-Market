@@ -50,16 +50,47 @@ class Products extends StatelessWidget {
                 ? CupertinoActivityIndicator()
                 : CircularProgressIndicator();
           }
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              var product = snapshot.data[index];
-              return AppCard(
-                  productName: product.productName,
-                  unitType: product.unitType,
-                  availableUnits: product.availableUnits,
-                  price: product.unitPrice);
-            },
-            itemCount: snapshot.data.length,
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    var product = snapshot.data[index];
+                    return GestureDetector(
+                      child: AppCard(
+                          productName: product.productName,
+                          unitType: product.unitType,
+                          availableUnits: product.availableUnits,
+                          price: product.unitPrice),
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed('/editproduct/${product.productId}');
+                      },
+                    );
+                  },
+                  itemCount: snapshot.data.length,
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  color: AppColors.straw,
+                  child: (Platform.isIOS)
+                      ? Icon(
+                          CupertinoIcons.add,
+                          color: Colors.white,
+                          size: 35,
+                        )
+                      : Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                ),
+                onTap: ()=>Navigator.of(context).pushNamed('/editproduct'),
+              )
+            ],
           );
         });
   }
