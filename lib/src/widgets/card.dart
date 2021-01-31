@@ -10,6 +10,8 @@ class AppCard extends StatelessWidget {
   final int availableUnits;
   final double price;
   final String note;
+  final String imageUrl;
+
   final formatCurrency = NumberFormat.simpleCurrency();
 
   AppCard(
@@ -17,7 +19,8 @@ class AppCard extends StatelessWidget {
       @required this.unitType,
       @required this.availableUnits,
       @required this.price,
-      this.note=""});
+      this.note = "",
+      this.imageUrl});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,25 +40,41 @@ class AppCard extends StatelessWidget {
           Row(
             children: [
               Padding(
-                padding: const EdgeInsets.only(right: 10, bottom: 10, top: 10),
-                child: Image.asset(
-                  'assets/images/vegetables.png',
-                  height: 100,
-                ),
+                padding:
+                    const EdgeInsets.only(right: 10.0, bottom: 10.0, top: 10.0),
+                child: (imageUrl != null && imageUrl != "")
+                    ? ClipRRect(
+                        child: Image.network(
+                          imageUrl,
+                          height: 100.0,
+                        ),
+                        borderRadius: BorderRadius.circular(5.0),
+                      )
+                    : Image.asset(
+                        'assets/images/vegetables.png',
+                        height: 100.0,
+                      ),
+
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text(productName,style: TextStyles.subtitle,),
-                Text('${formatCurrency.format(price)}/$unitType',style: TextStyles.body,),
-                  (availableUnits>0)
+                children: [
+                  Text(
+                    productName,
+                    style: TextStyles.subtitle,
+                  ),
+                  Text(
+                    '${formatCurrency.format(price)}/$unitType',
+                    style: TextStyles.body,
+                  ),
+                  (availableUnits > 0)
                       ? Text('In Stock', style: TextStyles.bodyLightBlue)
-                      : Text('Currently Unavailable',style: TextStyles.bodyRed)
+                      : Text('Currently Unavailable', style: TextStyles.bodyRed)
                 ],
               )
             ],
           ),
           Text(note, style: TextStyles.body)
-
         ],
       ),
     );
