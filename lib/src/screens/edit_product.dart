@@ -75,14 +75,14 @@ class _EditProductState extends State<EditProduct> {
 
         return (Platform.isIOS)
             ? AppSliverScaffold.cupertinoSliverScaffold(
-                navTitle: '',
-                pageBody: pageBody(true, productBloc, context, existingProduct),
-                context: context)
+            navTitle: '',
+            pageBody: pageBody(true, productBloc, context, existingProduct),
+            context: context)
             : AppSliverScaffold.materialSliverScaffold(
-                navTitle: '',
-                pageBody:
-                    pageBody(false, productBloc, context, existingProduct),
-                context: context);
+            navTitle: '',
+            pageBody:
+            pageBody(false, productBloc, context, existingProduct),
+            context: context);
       },
     );
   }
@@ -123,7 +123,7 @@ class _EditProductState extends State<EditProduct> {
               return AppDropdownButton(
                 hintText: 'Unit Type',
                 items: items,
-                value: snapshot.data,
+                value:snapshot.data,
                 materialIcon: FontAwesomeIcons.balanceScale,
                 cupertinoIcon: FontAwesomeIcons.balanceScale,
                 onChanged: productBloc.changeUnitType,
@@ -161,39 +161,30 @@ class _EditProductState extends State<EditProduct> {
                 onChanged: productBloc.changeAvailableUnits,
               );
             }),
-        StreamBuilder(
-            stream: productBloc.isUploading,
-            builder: (context, snapshot) {
-              return (!snapshot.hasData || snapshot.data == false)
-                  ? Container()
-                  : Center(child: (Platform.isIOS)
-                  ? CupertinoActivityIndicator()
-                  : CircularProgressIndicator(),);
-            },),
+        StreamBuilder<bool>(
+          stream: productBloc.isUploading,
+          builder: (context,snapshot){
+            return (!snapshot.hasData || snapshot.data == false)
+                ? Container()
+                : Center(child: (Platform.isIOS)
+                ? CupertinoActivityIndicator()
+                : CircularProgressIndicator(),);
+          },),
         StreamBuilder<String>(
             stream: productBloc.imageUrl,
             builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data == "") {
-                return AppButton(
-                  buttonType: ButtonType.Straw,
-                  buttonText: 'Add Image',
-                  onPressed: productBloc.pickImage,
-                );
-              }
-              return Column(
-                children: [
-                  Padding(
-                    padding: BaseStyles.listPadding,
-                    child: Image.network(snapshot.data),
-                  ),
-                  AppButton(
-                    buttonText: "Change Image",
-                    buttonType: ButtonType.Straw,
-                    onPressed: productBloc.pickImage,
-                  )
-                ],
-              );
-            }),
+              if (!snapshot.hasData || snapshot.data == "")
+                return AppButton(buttonType: ButtonType.Straw, buttonText: 'Add Image',onPressed: productBloc.pickImage,);
+
+              return Column(children: <Widget>[
+                Padding(
+                  padding: BaseStyles.listPadding,
+                  child: Image.network(snapshot.data),
+                ),
+                AppButton(buttonType: ButtonType.Straw, buttonText: 'Change Image',onPressed: productBloc.pickImage,)
+              ],);
+            }
+        ),
         StreamBuilder<bool>(
             stream: productBloc.isValid,
             builder: (context, snapshot) {
