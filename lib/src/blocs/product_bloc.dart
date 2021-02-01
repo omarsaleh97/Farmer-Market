@@ -39,7 +39,7 @@ class ProductBloc {
   Stream<bool> get isValid => CombineLatestStream.combine4(
       productName, unitType, unitPrice, availableUnits, (a, b, c, d) => true);
   Stream<List<Product>> productByVendorId(String vendorId) =>
-      db.fetchProductsByVedorId(vendorId);
+      db.fetchProductsByVendorId(vendorId);
   Stream<bool> get productSaved => _productSaved.stream;
   Future<Product> fetchProduct(String productId) => db.fetchProduct(productId);
   Stream<bool> get isUploading => _isUploading.stream;
@@ -53,7 +53,7 @@ class ProductBloc {
   Function(Product) get changeProduct => _product.sink.add;
   Function(String) get changeImageUrl => _imageUrl.sink.add;
 
-  displose() {
+  dispose() {
     _productName.close();
     _unitType.close();
     _unitPrice.close();
@@ -164,4 +164,5 @@ class ProductBloc {
       }
     }
   });
+
 }

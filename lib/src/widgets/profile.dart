@@ -21,11 +21,26 @@ class Profile extends StatelessWidget {
 
   Widget pageBody(BuildContext context) {
     var authBloc = Provider.of<AuthBloc>(context);
+    // return Center(
+    //     child: (Platform.isIOS)
+    //         ? CupertinoButton(
+    //             child: Text('Logout'),
+    //             onPressed: () => authBloc.logout(),
+    //           )
+    //         : FlatButton(
+    //             child: Text('Logout'),
+    //             onPressed: () => authBloc.logout(),
+    //           ));
+
     return Center(
         child: (Platform.isIOS)
             ? CupertinoButton(
-                child: Text("Logout"), onPressed: () => authBloc.logout())
+          child: Text('Add'),
+          onPressed: () => Navigator.of(context).pushNamed('/editvendor') ,
+        )
             : FlatButton(
-                onPressed: () => authBloc.logout(), child: Text("Logout")));
+          child: Text('Add'),
+          onPressed: () => Navigator.of(context).pushNamed('/editvendor'),
+        ));
   }
 }
