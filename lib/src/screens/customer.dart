@@ -6,7 +6,10 @@ import 'package:farmer_market/src/widgets/customer_scaffold.dart';
 import 'package:farmer_market/src/widgets/navbar.dart';
 import 'package:farmer_market/src/widgets/orders.dart';
 import 'package:farmer_market/src/widgets/products.dart';
+import 'package:farmer_market/src/widgets/products_customer.dart';
 import 'package:farmer_market/src/widgets/profile.dart';
+import 'package:farmer_market/src/widgets/profile_customer.dart';
+import 'package:farmer_market/src/widgets/shopping_bag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -81,9 +84,9 @@ class _CustomerState extends State<Customer> {
                   ];
                 },
                 body: TabBarView(children: <Widget>[
-                  Products(),
-                  Orders(),
-                  Profile(),
+                  ProductCustomer(),
+                  ShoppingBag(),
+                  ProfileCustomer(),
                 ],)
             )
         ),

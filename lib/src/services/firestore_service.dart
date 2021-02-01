@@ -5,6 +5,7 @@ import 'package:farmer_market/src/models/user.dart';
 
 class FirestoreService {
   FirebaseFirestore _db = FirebaseFirestore.instance;
+
   Future<void> addUser(Farmer user) {
     return _db.collection('users').doc(user.userId).set(user.toMap());
   }
@@ -18,37 +19,36 @@ class FirestoreService {
   }
 
   Stream<List<String>> fetchUnitTypes() {
-    return _db.collection('types').doc('units').snapshots().map((snapshot) =>
-        snapshot
-            .data()['production']
+    return _db.collection('types').doc('units').snapshots().map(
+            (snapshot) => snapshot.data()['production']
             .map<String>((type) => type.toString())
             .toList());
   }
 
-  Future setProduct(Product product) {
+  Future<void> setProduct(Product product) {
+    var options = SetOptions(merge:true);
     return _db
         .collection('products')
         .doc(product.productId)
-        .set(product.toMap());
+        .set(product.toMap(),options);
   }
 
-  Future<Product> fetchProduct(String productId) {
-    return _db
-        .collection('products')
-        .doc(productId)
-        .get()
-        .then((snapshot) => Product.fromFirestore(snapshot.data()));
+  Future<Product> fetchProduct(String productId){
+    return _db.collection('products').doc(productId)
+        .get().then((snapshot) => Product.fromFirestore(snapshot.data()));
   }
 
-  Stream<List<Product>> fetchProductsByVedorId(String vendorId) {
+  Stream<List<Product>> fetchProductsByVendorId(String vendorId) {
     return _db
         .collection('products')
         .where('vendorId', isEqualTo: vendorId)
         .snapshots()
         .map((query) => query.docs)
         .map((snapshot) =>
-            snapshot.map((doc) => Product.fromFirestore(doc.data())).toList());
+        snapshot.map((doc) => Product.fromFirestore(doc.data()))
+            .toList());
   }
+
   Stream<List<Market>> fetchUpcomingMarkets(){
     return _db
         .collection('markets')
@@ -56,7 +56,34 @@ class FirestoreService {
         .snapshots()
         .map((query) => query.docs)
         .map((snapshot) => snapshot
-        .map((docs) => Market.fromFirestore(docs.data()))
+        .map((doc) => Market.fromFirestore(doc.data()))
         .toList());
   }
+
+  Stream<List<Product>> fetchAvailableProducts(){
+    return _db
+        .collection('products')
+        .where('availableUnits', isGreaterThan: 0)
+        .snapshots()
+        .map((query) => query.docs)
+        .map((snapshot) => snapshot.map((doc) => Product.fromFirestore(doc.data()))
+        .toList());
+  }
+
+  Future<Vendor> fetchVendor(String vendorId){
+    return _db
+        .collection('vendors')
+        .doc(vendorId)
+        .get().then((snapshot) => Vendor.fromFirestore(snapshot.data()));
+  }
+
+  Future<void> setVendor(Vendor vendor){
+    var options = SetOptions(merge:true);
+
+    return _db
+        .collection('vendors')
+        .doc(vendor.vendorId)
+        .set(vendor.toMap(),options);
+  }
+
 }
