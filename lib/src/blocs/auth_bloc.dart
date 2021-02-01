@@ -4,6 +4,7 @@ import 'package:farmer_market/src/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -18,6 +19,7 @@ class AuthBloc {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = FirestoreService();
   final fb = FacebookLogin();
+  final googleSignin = GoogleSignIn(scopes: ['email']);
   //Get Data
   Stream<String> get email => _email.stream.transform(validateEmail);
   Stream<String> get password => _password.stream.transform(validatePassword);
@@ -72,6 +74,11 @@ class AuthBloc {
       print(error);
       _errorMessage.sink.add(error.message);
     }
+    catch(error){
+      _errorMessage.sink.add('Signup Failed');
+      print(error.toString());
+
+    }
   }
 
   loginEmail() async {
@@ -82,7 +89,8 @@ class AuthBloc {
       _user.sink.add(user);
     } on FirebaseAuthException catch (error) {
       print(error);
-      _errorMessage.sink.add(error.message);
+      _errorMessage.sink.add("signin failed");
+
     }
   }
 
@@ -94,19 +102,31 @@ class AuthBloc {
     ]);
     switch (res.status) {
       case FacebookLoginStatus.success:
-        final FacebookAccessToken fbToken = res.accessToken;
-        AuthCredential credential =
-            FacebookAuthProvider.credential(fbToken.token);
-        //sign in to firebase
-        final result = await _auth.signInWithCredential(credential);
-        //check if user exists
-        var existingUser = await _firestoreService.fetchUser(result.user.uid);
-        var user = Farmer(email: result.user.email, userId: result.user.uid);
-        if (existingUser == null) {
-          await _firestoreService.addUser(user);
-          _user.sink.add(user);
+        try {
+          final FacebookAccessToken fbToken = res.accessToken;
+          AuthCredential credential =
+          FacebookAuthProvider.credential(fbToken.token);
+          //sign in to firebase
+          final result = await _auth.signInWithCredential(credential);
+          //check if user exists
+          var existingUser = await _firestoreService.fetchUser(result.user.uid);
+          var user = Farmer(email: result.user.email, userId: result.user.uid);
+          if (existingUser == null) {
+            await _firestoreService.addUser(user);
+            _user.sink.add(user);
+          }
         }
-        break;
+        on FirebaseAuthException catch (error) {
+          print(error);
+          _errorMessage.sink.add(error.message);
+        }catch(error){
+          _errorMessage.sink.add('Facebook Authorization Failed');
+          print(error.toString());
+
+        }
+          break;
+
+
       case FacebookLoginStatus.cancel:
         _errorMessage.sink.add('Canceled by user');
         break;
@@ -114,6 +134,34 @@ class AuthBloc {
         _errorMessage.sink.add('Facebook Authorization Failed');
         print(res.error.toString());
         break;
+    }
+  }
+//google login
+  signinGoogle()async{
+    try{
+      final GoogleSignInAccount googleUser = await googleSignin.signIn();
+      final GoogleSignInAuthentication googleAuth =await googleUser.authentication;
+      final AuthCredential credential =GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,accessToken: googleAuth.accessToken
+
+      );
+      //sign in to firebase
+      final result = await _auth.signInWithCredential(credential);
+      //check if user exists
+      var existingUser = await _firestoreService.fetchUser(result.user.uid);
+      var user = Farmer(email: result.user.email, userId: result.user.uid);
+      if (existingUser == null) {
+        await _firestoreService.addUser(user);
+        _user.sink.add(user);
+      }
+    }on FirebaseAuthException catch (error) {
+      print(error);
+      _errorMessage.sink.add(error.message);
+    }
+    catch(error){
+      _errorMessage.sink.add('Google Authorization Failed');
+      print(error.toString());
+
     }
   }
 

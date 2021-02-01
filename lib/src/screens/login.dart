@@ -136,7 +136,7 @@ class _LoginState extends State<Login> {
               SizedBox(
                 width: 15,
               ),
-              AppSocialButton(socialType: SocialType.Google),
+              AppSocialButton(socialType: SocialType.Google,onPressed: authBloc.signinGoogle,),
             ],
           ),
         ),

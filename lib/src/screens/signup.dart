@@ -133,7 +133,7 @@ class _SignupState extends State<Signup> {
               SizedBox(
                 width: 15,
               ),
-              AppSocialButton(socialType: SocialType.Google),
+              AppSocialButton(socialType: SocialType.Google,onPressed: authBloc.signinGoogle,),
             ],
           ),
         ),
