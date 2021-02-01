@@ -3,7 +3,7 @@ import 'package:farmer_market/src/styles/textfields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AppTextField extends StatefulWidget {
+class AppTextField extends StatefulWidget{
   final bool isIOS;
   final String hintText;
   final IconData materialIcon;
@@ -13,7 +13,7 @@ class AppTextField extends StatefulWidget {
   final void Function(String) onChanged;
   final String errorText;
   final String initialText;
-
+  final int maxLines;
 
   AppTextField({
     @required this.isIOS,
@@ -23,8 +23,9 @@ class AppTextField extends StatefulWidget {
     this.textInputType = TextInputType.text,
     this.obscureText = false,
     this.onChanged,
-    this.errorText, this.initialText,
-
+    this.errorText,
+    this.initialText,
+    this.maxLines = 1,
   });
 
   @override
@@ -35,6 +36,8 @@ class _AppTextFieldState extends State<AppTextField> {
   FocusNode _node;
   bool displayCupertinoErrorBorder;
   TextEditingController _controller;
+
+
   @override
   void initState() {
     _node = FocusNode();
@@ -44,6 +47,7 @@ class _AppTextFieldState extends State<AppTextField> {
     displayCupertinoErrorBorder = false;
     super.initState();
   }
+
   void _handleFocusChange(){
     if (_node.hasFocus==false  && widget.errorText != null){
       displayCupertinoErrorBorder = true;
@@ -54,6 +58,7 @@ class _AppTextFieldState extends State<AppTextField> {
     widget.onChanged(_controller.text);
 
   }
+
   @override
   void dispose() {
     _node.removeListener(_handleFocusChange);
@@ -64,13 +69,11 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isIOS) {
+    if (widget.isIOS){
       return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: TextFieldStyles.textBoxHorizontal,
-            vertical: TextFieldStyles.textBoxVertical),
+        padding: EdgeInsets.symmetric(horizontal: TextFieldStyles.textBoxHorizontal, vertical: TextFieldStyles.textBoxVertical),
         child: Column(
-          children: [
+          children: <Widget>[
             CupertinoTextField(
               keyboardType: widget.textInputType,
               padding: EdgeInsets.all(12.0),
@@ -82,42 +85,31 @@ class _AppTextFieldState extends State<AppTextField> {
               decoration: (displayCupertinoErrorBorder) ? TextFieldStyles.cupertinoErrorDecoration : TextFieldStyles.cupertinoDecoration,
               prefix: TextFieldStyles.iconPrefix(widget.cupertinoIcon),
               obscureText: widget.obscureText,
+              onChanged: widget.onChanged,
               focusNode: _node,
               controller: _controller,
-              onChanged: widget.onChanged,
+              maxLines: widget.maxLines,
             ),
-            (widget.errorText != null)
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 5.0, left: 10.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          widget.errorText,
-                          style: TextStyles.error,
-                        )
-                      ],
-                    ),
-                  )
-                : Container(),
+            (widget.errorText !=null) ? Padding(
+              padding: const EdgeInsets.only(top: 5.0,left:10.0),
+              child: Row(children: <Widget>[Text(widget.errorText,style: TextStyles.error,)],),
+            ) : Container()
           ],
         ),
       );
     } else {
       return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: TextFieldStyles.textBoxHorizontal,
-            vertical: TextFieldStyles.textBoxVertical),
+        padding: EdgeInsets.symmetric(horizontal: TextFieldStyles.textBoxHorizontal, vertical: TextFieldStyles.textBoxVertical),
         child: TextField(
           keyboardType: widget.textInputType,
           cursorColor: TextFieldStyles.cursorColor,
-          style: TextFieldStyles.text,
+          style:TextFieldStyles.text,
           textAlign: TextFieldStyles.textAlign,
-          decoration: TextFieldStyles.materialDecoration(
-              widget.hintText, widget.materialIcon, widget.errorText),
+          decoration: TextFieldStyles.materialDecoration(widget.hintText, widget.materialIcon,widget.errorText),
           obscureText: widget.obscureText,
-          onChanged: widget.onChanged,
           controller: _controller,
-
+          onChanged: widget.onChanged,
+          maxLines: widget.maxLines,
         ),
       );
     }

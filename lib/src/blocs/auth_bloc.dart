@@ -3,6 +3,7 @@ import 'package:farmer_market/src/services/firestore_service.dart';
 import 'package:farmer_market/src/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -16,7 +17,7 @@ class AuthBloc {
   final _errorMessage = BehaviorSubject<String>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = FirestoreService();
-
+  final fb = FacebookLogin();
   //Get Data
   Stream<String> get email => _email.stream.transform(validateEmail);
   Stream<String> get password => _password.stream.transform(validatePassword);
@@ -24,7 +25,7 @@ class AuthBloc {
       CombineLatestStream.combine2(email, password, (email, password) => true);
   Stream<Farmer> get user => _user.stream;
   Stream<String> get errorMessage => _errorMessage.stream;
-  String get userId =>_user.value.userId;
+  String get userId => _user.value.userId;
 
   //Set Data
   Function(String) get changeEmail => _email.sink.add;
@@ -67,7 +68,7 @@ class AuthBloc {
       var user =
           Farmer(userId: userCredential.user.uid, email: _email.value.trim());
       await _firestoreService.addUser(user);
-    } on FirebaseAuthException  catch (error) {
+    } on FirebaseAuthException catch (error) {
       print(error);
       _errorMessage.sink.add(error.message);
     }
@@ -79,14 +80,45 @@ class AuthBloc {
           email: _email.value.trim(), password: _password.value.trim());
       var user = await _firestoreService.fetchUser(userCredential.user.uid);
       _user.sink.add(user);
-    } on FirebaseAuthException  catch (error) {
+    } on FirebaseAuthException catch (error) {
       print(error);
       _errorMessage.sink.add(error.message);
     }
   }
 
+//FaceBook login
+  signinFacebook() async {
+    final res = await fb.logIn(permissions: [
+      FacebookPermission.publicProfile,
+      FacebookPermission.email,
+    ]);
+    switch (res.status) {
+      case FacebookLoginStatus.success:
+        final FacebookAccessToken fbToken = res.accessToken;
+        AuthCredential credential =
+            FacebookAuthProvider.credential(fbToken.token);
+        //sign in to firebase
+        final result = await _auth.signInWithCredential(credential);
+        //check if user exists
+        var existingUser = await _firestoreService.fetchUser(result.user.uid);
+        var user = Farmer(email: result.user.email, userId: result.user.uid);
+        if (existingUser == null) {
+          await _firestoreService.addUser(user);
+          _user.sink.add(user);
+        }
+        break;
+      case FacebookLoginStatus.cancel:
+        _errorMessage.sink.add('Canceled by user');
+        break;
+      case FacebookLoginStatus.error:
+        _errorMessage.sink.add('Facebook Authorization Failed');
+        print(res.error.toString());
+        break;
+    }
+  }
+
   Future<bool> isLoggedIn() async {
-    var firebaseUser = await _auth.currentUser;
+    var firebaseUser = _auth.currentUser;
     if (firebaseUser == null) {
       return false;
     }

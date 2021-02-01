@@ -128,7 +128,7 @@ class _SignupState extends State<Signup> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               AppSocialButton(
-                socialType: SocialType.Facebook,
+                socialType: SocialType.Facebook,onPressed: authBloc.signinFacebook,
               ),
               SizedBox(
                 width: 15,

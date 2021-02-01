@@ -112,8 +112,8 @@ class _EditVendorState extends State<EditVendor> {
             builder: (context, snapshot) {
               return AppTextField(
                 hintText: 'Vendor Name',
-                cupertinoIcon: FontAwesomeIcons.shoppingBasket,
-                materialIcon: FontAwesomeIcons.shoppingBasket,
+                cupertinoIcon: FontAwesomeIcons.sign,
+                materialIcon: FontAwesomeIcons.sign,
                 isIOS: isIOS,
                 errorText: snapshot.error,
                 initialText:
@@ -126,8 +126,9 @@ class _EditVendorState extends State<EditVendor> {
             builder: (context, snapshot) {
               return AppTextField(
                 hintText: 'Description',
-                cupertinoIcon: FontAwesomeIcons.shoppingBasket,
-                materialIcon: FontAwesomeIcons.shoppingBasket,
+                maxLines: 7,
+                cupertinoIcon: FontAwesomeIcons.book,
+                materialIcon: FontAwesomeIcons.book,
                 isIOS: isIOS,
                 errorText: snapshot.error,
                 initialText: (existingVendor != null)

@@ -14,8 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
-
-
   @override
   _LoginState createState() => _LoginState();
 }
@@ -31,8 +29,7 @@ class _LoginState extends State<Login> {
         Navigator.pushReplacementNamed(context, '/landing');
       }
     });
-    _errorMessageSubscription =
-        authBloc.errorMessage.listen((errorMessage) {
+    _errorMessageSubscription = authBloc.errorMessage.listen((errorMessage) {
       if (errorMessage != '') {
         AppAlerts.showErrorDialog(Platform.isIOS, context, errorMessage)
             .then((_) => authBloc.clearErrorMessage());
@@ -132,7 +129,10 @@ class _LoginState extends State<Login> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppSocialButton(socialType: SocialType.Facebook),
+              AppSocialButton(
+                socialType: SocialType.Facebook,
+                onPressed: authBloc.signinFacebook,
+              ),
               SizedBox(
                 width: 15,
               ),

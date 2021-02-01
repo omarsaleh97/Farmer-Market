@@ -10,7 +10,9 @@ class Farmer {
     };
   }
 
-  Farmer.fromFireStore(Map<String, dynamic> firestore)
-      : userId = firestore['userId'],
-        email = firestore['email'];
+  factory Farmer.fromFireStore(Map<String, dynamic> firestore){
+    if (firestore == null) return null;
+    return Farmer(userId: firestore['userId'], email: firestore['email']);
+  }
+
 }

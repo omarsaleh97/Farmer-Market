@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:farmer_market/src/blocs/auth_bloc.dart';
+import 'package:farmer_market/src/blocs/vendor_bloc.dart';
 import 'package:farmer_market/src/styles/tabBar.dart';
 import 'package:farmer_market/src/widgets/navbar.dart';
 import 'package:farmer_market/src/widgets/orders.dart';
@@ -13,14 +14,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Vendor extends StatefulWidget {
+
+
   @override
   _VendorState createState() => _VendorState();
 
   static TabBar get vendorTabBar {
     return TabBar(
-      unselectedLabelColor: TabBarStyles.unselectedLabelColor,
-      labelColor: TabBarStyles.labelColor,
-      indicatorColor: TabBarStyles.indicatorColor,
+      unselectedLabelColor: TabBarStyles.unselectedLabelColor ,
+      labelColor: TabBarStyles.labelColor ,
+      indicatorColor: TabBarStyles.indicatorColor ,
       tabs: <Widget>[
         Tab(icon: Icon(Icons.list)),
         Tab(icon: Icon(Icons.shopping_cart)),
@@ -35,14 +38,15 @@ class _VendorState extends State<Vendor> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero, () {
-      var authBloc = Provider.of<AuthBloc>(context, listen: false);
+    Future.delayed(Duration.zero, (){
+      final authBloc = Provider.of<AuthBloc>(context,listen: false);
+      final vendorBloc = Provider.of<VendorBloc>(context,listen:false);
+      vendorBloc.fetchVendor(authBloc.userId).then((vendor) => vendorBloc.changeVendor(vendor));
       _userSubscription = authBloc.user.listen((user) {
-        if (user == null)
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/login', (route) => false);
+        if (user == null) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
       });
     });
+
     super.initState();
   }
 
@@ -54,12 +58,13 @@ class _VendorState extends State<Vendor> {
 
   @override
   Widget build(BuildContext context) {
+
     if (Platform.isIOS) {
       return CupertinoPageScaffold(
         child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              AppNavbar.cupertinoNavBar(title: 'Vendor Name', context: context),
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
+            return <Widget> [
+              AppNavbar.cupertinoNavBar(title: 'Vendor Name',context: context),
             ];
           },
           body: VendorScaffold.cupertinoTabScaffold,
@@ -69,16 +74,18 @@ class _VendorState extends State<Vendor> {
       return DefaultTabController(
         length: 3,
         child: Scaffold(
-          body: NestedScrollView(
-            headerSliverBuilder: (BuildContext context, bool innerBoxScrolled) {
-              return <Widget>[
-                AppNavbar.materialNavBar(
-                    title: 'Vendor Name', tabBar: Vendor.vendorTabBar)
-              ];
-            },
-            body:
-                TabBarView(children: <Widget>[Products(), Orders(), Profile()]),
-          ),
+            body: NestedScrollView(
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled){
+                  return <Widget> [
+                    AppNavbar.materialNavBar(title: 'Vendor Name', tabBar: Vendor.vendorTabBar)
+                  ];
+                },
+                body: TabBarView(children: <Widget>[
+                  Products(),
+                  Orders(),
+                  Profile(),
+                ],)
+            )
         ),
       );
     }

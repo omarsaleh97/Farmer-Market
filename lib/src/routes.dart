@@ -35,6 +35,11 @@ abstract class Routes {
               builder: (context) => Customer(
                 marketId: routeArray[2],
               ));
+        } else if (settings.name.contains('/editvendor/')) {
+          return MaterialPageRoute(
+              builder: (context) => EditVendor(
+                vendorId: routeArray[2],
+              ));
         }
         return MaterialPageRoute(builder: (context) => Login());
     }
@@ -66,9 +71,13 @@ abstract class Routes {
               builder: (context) => Customer(
                 marketId: routeArray[2],
               ));
+        } else if (settings.name.contains('/editvendor/')) {
+          return CupertinoPageRoute(
+              builder: (context) => EditVendor(
+                vendorId: routeArray[2],
+              ));
         }
         return CupertinoPageRoute(builder: (context) => Login());
     }
   }
 }
-
